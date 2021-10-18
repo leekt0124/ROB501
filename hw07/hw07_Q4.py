@@ -20,7 +20,7 @@ y = mat_contents['y'] # y.shape = (1, 500), y[0][0].shape = (3, 1)
 
 # Initilize plot
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-fig.suptitle('Compare different LS runtime')
+fig.suptitle('Drifting state estimation')
 
 # 4 - (a)
 # ------------------------------------------------------
@@ -67,7 +67,7 @@ end = time.time()
 print("Run time for calculating norm error using batch Process = ", end - start)
 
 ax1.plot(E[n:], 'r.')
-ax1.set(xlabel='k', ylabel='norm error')
+ax1.set(xlabel='k', ylabel='E_k')
 ax1.set_title("Norm error in x-hat using original Batch Process\n Run time = {:.3f} s".format(end - start))
 
 
@@ -113,8 +113,8 @@ end = time.time()
 print("Run time for calculating norm error using batch Process = ", end - start)
 
 ax2.plot(E_forget[n:], 'b.')
-ax2.set(xlabel='k', ylabel='norm error')
-ax2.set_title("Norm error in x-hat using Batch Process with forgetting factor 0.98\n Run time = {:.3f} s".format(end - start))
+ax2.set(xlabel='k', ylabel='E_k')
+ax2.set_title("Norm error in x-hat using Batch Process\n Forgetting factor = {}\n Run time = {:.3f} s".format(FORGET_FACTOR, end - start))
 
 
 
@@ -133,43 +133,110 @@ for i in range(1, n + 1):
 
 
 E_RLS = [0] * n
-# E_RLS_IL = [0] * n
+E_RLS_IL = [0] * n
 X_n = np.linalg.inv(M_n).dot(G_n)
 X_actual_n = x_actual[0, n - 1]
 X_error_k = X_n - X_actual_n
 norm_k = np.linalg.norm(X_error_k)
-# print(norm_k)
+
 E_RLS.append(norm_k)
-# E_RLS_IL.append(norm_k)
+E_RLS_IL.append(norm_k)
 
 
-M_0 = M_n
+# M_0 = M_n
+# X_0 = X_n
+# start = time.time()
+# for i in range(n + 1, N + 1):
+#     C_1 = C[i]
+#     # print(C_1[0, :5])
+#     Y_1 = y[0][i - 1]
+#     # print(Y_1[:5, 0])
+#     M_1 = FORGET_FACTOR * M_0 + C_1.T.dot(C_1)
+#     K_1 = np.linalg.inv(M_1).dot(C_1.T)
+#     X_1 = X_0 + K_1.dot(Y_1 - C_1.dot(X_0))
+#     # print(X_1[:10])
+#     X_1_actual = x_actual[0, i - 1]
+#     # print(X_1_actual[:10])
+#     X_error_1 = X_1 - X_1_actual
+#     norm = np.linalg.norm(X_error_1)
+#     # print(norm)
+#     E_RLS.append(norm)
+
+#     M_0 = M_1
+#     X_0 = X_1
+
+# end = time.time()
+# print("Run time for calculating E_k using RLS = ", end - start)
+
+# ax3.plot(E_RLS[n:], 'r.')
+# ax3.set(xlabel='k', ylabel='E_K')
+# ax3.set_title("Norm error in x-hat using RLS\n Forgetting factor = {}\n Run time = {:.3f} s".format(FORGET_FACTOR, end - start))
+# plt.show()
+
+
+M_0_inv = np.linalg.inv(M_n)
 X_0 = X_n
 start = time.time()
 for i in range(n + 1, N + 1):
     C_1 = C[i]
-    # print(C_1[0, :5])
     Y_1 = y[0][i - 1]
-    # print(Y_1[:5, 0])
-    M_1 = FORGET_FACTOR * M_0 + C_1.T.dot(C_1)
-    K_1 = np.linalg.inv(M_1).dot(C_1.T)
-    X_1 = X_0 + K_1.dot(Y_1 - C_1.dot(X_0))
-    # print(X_1[:10])
+    M_1_inv = 1 / FORGET_FACTOR * M_0_inv - 1 / FORGET_FACTOR * M_0_inv.dot(C_1.T).dot(np.linalg.inv(FORGET_FACTOR * np.identity(3) + C_1.dot(M_0_inv).dot(C_1.T))).dot(C_1).dot(M_0_inv)
+    X_1 = X_0 + M_1_inv.dot(C_1.T).dot(Y_1 - C_1.dot(X_0))
+
     X_1_actual = x_actual[0, i - 1]
-    # print(X_1_actual[:10])
     X_error_1 = X_1 - X_1_actual
     norm = np.linalg.norm(X_error_1)
-    # print(norm)
-    E_RLS.append(norm)
+    E_RLS_IL.append(norm)    
 
-    M_0 = M_1
+    M_0_inv = M_1_inv
     X_0 = X_1
 
 end = time.time()
-print("Run time for calculating norm error using RLS = ", end - start)
+print("Run time for calculating norm error using RLS with Inversion Lemma = ", end - start)
+
+ax3.plot(E_RLS_IL[n:], 'y.')
+ax3.set(xlabel='k', ylabel='E_K')
+ax3.set_title("Norm error in x-hat using RLS with Inversion Lemma\n Forgetting factor = {}\n Run time = {:.3f} s".format(FORGET_FACTOR, end - start))
+plt.show()
 
 
-ax3.plot(E_RLS[n:], 'y.')
-ax3.set(xlabel='k', ylabel='norm error')
-ax3.set_title("Norm error in x-hat using RLS with forgetting factor\n Run time = {:.3f} s".format(end - start))
+# 4 - (bonus)
+# ------------------------------------------------------
+
+for FORGET_FACTOR in np.linspace(1, 0.25, 4):
+    # E_RLS = [0] * n
+    E_RLS_IL = [0] * n
+    X_n = np.linalg.inv(M_n).dot(G_n)
+    X_actual_n = x_actual[0, n - 1]
+    X_error_k = X_n - X_actual_n
+    norm_k = np.linalg.norm(X_error_k)
+
+    # E_RLS.append(norm_k)
+    E_RLS_IL.append(norm_k)
+
+    M_0_inv = np.linalg.inv(M_n)
+    X_0 = X_n
+    start = time.time()
+    for i in range(n + 1, N + 1):
+        C_1 = C[i]
+        Y_1 = y[0][i - 1]
+        M_1_inv = 1 / FORGET_FACTOR * M_0_inv - 1 / FORGET_FACTOR * M_0_inv.dot(C_1.T).dot(np.linalg.inv(FORGET_FACTOR * np.identity(3) + C_1.dot(M_0_inv).dot(C_1.T))).dot(C_1).dot(M_0_inv)
+        X_1 = X_0 + M_1_inv.dot(C_1.T).dot(Y_1 - C_1.dot(X_0))
+
+        X_1_actual = x_actual[0, i - 1]
+        X_error_1 = X_1 - X_1_actual
+        norm = np.linalg.norm(X_error_1)
+        E_RLS_IL.append(norm)    
+
+        M_0_inv = M_1_inv
+        X_0 = X_1
+
+    plt.plot(E_RLS_IL[n:], label='FORGET_FACTOR = {}'.format(FORGET_FACTOR))
+    # plt.
+    # ax3.set(xlabel='k', ylabel='E_K')
+    # ax3.set_title("Norm error in x-hat using RLS with Inversion Lemma\n Forgetting factor = {}\n Run time = {:.3f} s".format(FORGET_FACTOR, end - start))
+plt.xlabel("k")
+plt.ylabel("E_k")
+plt.title("Norm error for different forget factors")
+plt.legend(loc = 'upper right')
 plt.show()
