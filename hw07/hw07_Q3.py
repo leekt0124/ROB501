@@ -100,18 +100,13 @@ X_0 = X_n
 start = time.time()
 for i in range(n + 1, N + 1):
     C_1 = C[i]
-    # print(C_1[0, :5])
     Y_1 = y[0][i - 1]
-    # print(Y_1[:5, 0])
-    M_1_inv = np.linalg.inv(M_0 + C_1.T.dot(S).dot(C_1))
-    M_1 = np.linalg.inv(M_1_inv)
+    M_1 = M_0 + C_1.T.dot(S).dot(C_1)
+    M_1_inv = np.linalg.inv(M_1)
     X_1 = X_0 + M_1_inv.dot(C_1.T).dot(S).dot(Y_1 - C_1.dot(X_0))
-    # print(X_1[:10])
     X_1_actual = x_actual[0, i - 1]
-    # print(X_1_actual[:10])
     X_error_1 = X_1 - X_1_actual
     norm = np.linalg.norm(X_error_1)
-    # print(norm)
     E_RLS.append(norm)
 
     M_0 = M_1
@@ -132,17 +127,12 @@ X_0 = X_n
 start = time.time()
 for i in range(n + 1, N + 1):
     C_1 = C[i]
-    # print(C_1[0, :5])
     Y_1 = y[0][i - 1]
-    # print(Y_1[:5, 0])
     M_1_inv = M_0_inv - M_0_inv.dot(C_1.T).dot(np.linalg.inv(C_1.dot(M_0_inv).dot(C_1.T) + np.linalg.inv(S)).dot(C_1).dot(M_0_inv))
     X_1 = X_0 + M_1_inv.dot(C_1.T).dot(S).dot(Y_1 - C_1.dot(X_0))
-    # print(X_1[:10])
     X_1_actual = x_actual[0, i - 1]
-    # print(X_1_actual[:10])
     X_error_1 = X_1 - X_1_actual
     norm = np.linalg.norm(X_error_1)
-    # print(norm)
     E_RLS_IL.append(norm)
 
     M_0_inv = M_1_inv
