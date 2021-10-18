@@ -211,7 +211,6 @@ for FORGET_FACTOR in np.linspace(1, 0.25, 4):
     X_error_k = X_n - X_actual_n
     norm_k = np.linalg.norm(X_error_k)
 
-    # E_RLS.append(norm_k)
     E_RLS_IL.append(norm_k)
 
     M_0_inv = np.linalg.inv(M_n)
@@ -232,9 +231,7 @@ for FORGET_FACTOR in np.linspace(1, 0.25, 4):
         X_0 = X_1
 
     plt.plot(E_RLS_IL[n:], label='FORGET_FACTOR = {}'.format(FORGET_FACTOR))
-    # plt.
-    # ax3.set(xlabel='k', ylabel='E_K')
-    # ax3.set_title("Norm error in x-hat using RLS with Inversion Lemma\n Forgetting factor = {}\n Run time = {:.3f} s".format(FORGET_FACTOR, end - start))
+
 plt.xlabel("k")
 plt.ylabel("E_k")
 plt.title("Norm error for different forget factors")
