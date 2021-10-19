@@ -87,7 +87,7 @@ ax1.set_title("Norm error in x-hat using original Batch Process\n Run time = {:.
 #     R_0 = R_new
 
 
-FORGET_FACTOR = 0.98
+FORGET_FACTOR = 0.8
 R_forget = [0]
 R_0 = np.identity(3)
 d = collections.deque()
@@ -203,7 +203,7 @@ plt.show()
 # 4 - (bonus)
 # ------------------------------------------------------
 
-for FORGET_FACTOR in np.linspace(1, 0.25, 4):
+for FORGET_FACTOR in np.linspace(0.95, 0.05, 4):
     # E_RLS = [0] * n
     E_RLS_IL = [0] * n
     X_n = np.linalg.inv(M_n).dot(G_n)

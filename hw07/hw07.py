@@ -19,28 +19,29 @@ import numpy as np
 # print(N.dot(N.T))
 # print(N)
 
-# def Q2(A):
-#     w, v = np.linalg.eig(A)
-#     sigma = np.diag(w)
-#     N = v.dot(np.sqrt(sigma)).dot(v.T)
-#     print("e-values (diagonal elements of matrix sigma)= \n", w)
-#     print("e-vectors (matrix O)= \n", v)
-#     print("squared root (N) = \n", N)
-#     print("N ^ 2 = \n", N.dot(N.T))
-#     print("v * v.T = \n", v.dot(v.T))
-#     print("v.T * A * v = \n", v.T.dot(A).dot(v))
-# # A = np.array([[1, 3], [3, 9]])
-# # A = np.array([[6, 10, 11], [10, 19, 19], [11, 19, 21]])
-# # A = np.array([[2, 6, 10], [6, 10, 14], [10, 14, 18]])
-# # A = np.array([[1, 0, 6], [0, 4, 7], [6, 7, 10]])
-# # A = np.array([[1, 2, 6], [2, 5, 7], [6, 7, 60]])
-# # A = np.array([[1, 0, 2 ** 0.5], [0, 2, 0], [2 ** 0.5, 0, 0]])
-# # A = np.array([[-1, 0], [0, 2]])
-# A = np.array([[0, -0.5774, 0.8165], [2, 0, 0], [0, 0.8165, 0.5774]])
-# K = np.array([[1, 0, 2 ** 0.5], [0, 2, 0], [2 ** 0.5, 0, 0]])
+def Q2(A):
+    w, v = np.linalg.eig(A)
+    sigma = np.diag(w)
+    N = v.dot(np.sqrt(sigma)).dot(v.T)
+    print("e-values (diagonal elements of matrix sigma)= \n", w)
+    print("e-vectors (matrix O)= \n", v)
+    print("squared root (N) = \n", N)
+    print("N ^ 2 = \n", N.dot(N.T))
+    print("v * v.T = \n", v.dot(v.T))
+    print("v.T * A * v = \n", v.T.dot(A).dot(v))
+# A = np.array([[1, 3], [3, 9]])
+# A = np.array([[6, 10, 11], [10, 19, 19], [11, 19, 21]])
+# A = np.array([[2, 6, 10], [6, 10, 14], [10, 14, 18]])
+# A = np.array([[1, 0, 6], [0, 4, 7], [6, 7, 10]])
+# A = np.array([[1, 2, 6], [2, 5, 7], [6, 7, 60]])
+# A = np.array([[1, 0, 2 ** 0.5], [0, 2, 0], [2 ** 0.5, 0, 0]])
+# A = np.array([[-1, 0], [0, 2]])
+A = np.array([[0, -0.5774, 0.8165], [1, 0, 0], [0, 0.8165, 0.5774]])
+K = np.array([[1, 0, 2 ** 0.5], [0, 2, 0], [2 ** 0.5, 0, 0]])
 
 # Q2(A)
-# print(A.T.dot(K).dot(A))
+print(A.T.dot(A))
+print(A.T.dot(K).dot(A))
 
 
 
@@ -85,16 +86,16 @@ import numpy as np
 # A = np.diag(d)
 # print(A)
 
-import collections
-FORGET_FACTOR = 0.98
-R_forget = [0]
-R_0 = np.identity(3)
-d = collections.deque()
-diag_list = []
+# import collections
+# FORGET_FACTOR = 0.98
+# R_forget = [0]
+# R_0 = np.identity(3)
+# d = collections.deque()
+# diag_list = []
 
-for i in range(1, 5):
-    for j in range(3):
-        d.appendleft(FORGET_FACTOR ** (i - 1))
-    diag_list.append(np.diag(d))
-    print(np.diag(d))
-# print(diag_list)
+# for i in range(1, 5):
+#     for j in range(3):
+#         d.appendleft(FORGET_FACTOR ** (i - 1))
+#     diag_list.append(np.diag(d))
+#     print(np.diag(d))
+# # print(diag_list)
